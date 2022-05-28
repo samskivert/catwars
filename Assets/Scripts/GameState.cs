@@ -23,6 +23,11 @@ public class ClanState {
   public ClanState (string name) {
     this.name = name;
     for (var ii = 0; ii < 6; ii += 1) herbs.Add(ii, 0);
+    cats.Add(new CatState(1, 0, 0, 0, CatState.Gender.Male));
+    cats.Add(new CatState(2, 0, 0, 3, CatState.Gender.Female));
+    cats.Add(new CatState(3, 0, 0, 1, CatState.Gender.Male));
+    cats.Add(new CatState(4, 0, 0, 2, CatState.Gender.Female));
+    cats.Add(new CatState(5, 0, 0, 0, CatState.Gender.Male));
   }
 }
 

@@ -25,6 +25,7 @@ public class ClanController : MonoBehaviour {
   private void AddCat (CatState cat) {
     var catObj = Instantiate(catPrefab, cats.transform);
     catObj.GetComponent<CatController>().Init(cat);
+    catObj.SetActive(true);
   }
 }
 
