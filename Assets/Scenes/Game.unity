@@ -202,6 +202,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8149214920646009447, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
   m_PrefabInstance: {fileID: 8149214920154207811}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &494007335 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9089878498402400115, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
+  m_PrefabInstance: {fileID: 8149214920154207811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00159a135f44c038e6aac727547df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -993,10 +1004,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8149214921230764393, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
-      propertyPath: m_text
-      value: Thunder Clan
-      objectReference: {fileID: 0}
     - target: {fileID: 8249212500662779775, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
       propertyPath: m_Pivot.x
       value: 1
@@ -1076,6 +1083,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8149214920646009447, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
   m_PrefabInstance: {fileID: 571069494}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &571069496 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9089878498402400115, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
+  m_PrefabInstance: {fileID: 571069494}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00159a135f44c038e6aac727547df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &779420601
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,10 +1926,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8149214921230764393, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
-      propertyPath: m_text
-      value: River Clan
-      objectReference: {fileID: 0}
     - target: {fileID: 8249212500662779775, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -2088,8 +2102,9 @@ GameObject:
   - component: {fileID: 1879193206}
   - component: {fileID: 1879193209}
   - component: {fileID: 1879193207}
+  - component: {fileID: 1879193210}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2165,6 +2180,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!114 &1879193210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879193203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42fe19e0d534849b694bbd9695dd5b6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clans:
+  - {fileID: 494007335}
+  - {fileID: 571069496}
+  - {fileID: 1900665225}
+  - {fileID: 1888286314}
 --- !u!1001 &1888286312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2848,10 +2880,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8149214921230764393, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
-      propertyPath: m_text
-      value: Wind Clan
-      objectReference: {fileID: 0}
     - target: {fileID: 8249212500662779775, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
       propertyPath: m_Pivot.x
       value: 1
@@ -2931,6 +2959,28 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8149214920646009447, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
   m_PrefabInstance: {fileID: 1888286312}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1888286314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9089878498402400115, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
+  m_PrefabInstance: {fileID: 1888286312}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00159a135f44c038e6aac727547df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1900665225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9089878498402400115, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
+  m_PrefabInstance: {fileID: 972461937}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00159a135f44c038e6aac727547df8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8149214920154207811
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3641,10 +3691,6 @@ PrefabInstance:
     - target: {fileID: 8149214920646009447, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8149214921230764393, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
-      propertyPath: m_text
-      value: Shadow Clan
       objectReference: {fileID: 0}
     - target: {fileID: 8249212500662779775, guid: 1cb4e99dd05b143789e2e02ac945107b, type: 3}
       propertyPath: m_SizeDelta.x
