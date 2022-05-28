@@ -18,9 +18,11 @@ public class ClanState {
   public readonly string name;
   public readonly List<CatState> cats = new List<CatState>();
   public readonly IValue<int> freshKill = Values.Mutable(0);
+  public readonly MutableMap<int, int> herbs = RMaps.LocalMutable<int, int>();
 
   public ClanState (string name) {
     this.name = name;
+    for (var ii = 0; ii < 6; ii += 1) herbs.Add(ii, 0);
   }
 }
 
