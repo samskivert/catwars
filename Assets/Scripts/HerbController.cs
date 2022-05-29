@@ -10,8 +10,11 @@ public class HerbController : MonoBehaviour {
   public Image herbImage;
   public TMP_Text herbCount;
 
-  public void Show (int herbId, int count) {
+  public void SetHerb (int herbId) {
     herbImage.sprite = herbSprites[herbId];
+  }
+
+  public void SetCount (int count) {
     herbCount.text = count.ToString();
   }
 }

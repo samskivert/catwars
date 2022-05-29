@@ -1,9 +1,9 @@
 namespace catwars {
 
-using System.Collections.Generic;
-
 using UnityEngine;
 using TMPro;
+
+using React;
 
 public class ClanController : MonoBehaviour {
   private GameState game;
@@ -13,13 +13,18 @@ public class ClanController : MonoBehaviour {
   public GameObject cats;
   public GameObject catPrefab;
   public HerbController[] herbs;
+  public FoodController food;
 
   public void Init (GameState game, ClanState clan) {
     this.game = game;
     this.clan = clan;
     clanLabel.text = clan.name;
     foreach (var cat in clan.cats) AddCat(cat);
-    for (var ii = 0; ii < herbs.Length; ii += 1) herbs[ii].Show(ii, clan.herbs.GetValueOrDefault(ii));
+    var idx = 0; foreach (var herb in herbs) {
+      herb.SetHerb(idx);
+      clan.herbs.GetValue(idx++).OnValue(herb.SetCount);
+    }
+    clan.freshKill.OnValue(food.Show);
   }
 
   private void AddCat (CatState cat) {
