@@ -136,6 +136,7 @@ public static class Values {
       current(); // refresh our current snapshot
       connected = true;
       var removers = vals.Select((v, ii) => v.OnChange((val, oldVal) => {
+        Array.Copy(curr, prev, curr.Length);
         curr[ii] = val;
         prev[ii] = oldVal;
         disp(currView, prevView);
@@ -153,11 +154,13 @@ public static class Values {
       var prev = current();
       var curr = current();
       return a.OnChange((val, oval) => {
+        prev = curr;
         prev.Item1 = oval;
         curr.Item1 = val;
         disp(curr, prev);
       }) +
       b.OnChange((val, oval) => {
+        prev = curr;
         prev.Item2 = oval;
         curr.Item2 = val;
         disp(curr, prev);
@@ -174,16 +177,19 @@ public static class Values {
       var prev = current();
       var curr = current();
       return a.OnChange((val, oval) => {
+        prev = curr;
         prev.Item1 = oval;
         curr.Item1 = val;
         disp(curr, prev);
       }) +
       b.OnChange((val, oval) => {
+        prev = curr;
         prev.Item2 = oval;
         curr.Item2 = val;
         disp(curr, prev);
       }) +
       c.OnChange((val, oval) => {
+        prev = curr;
         prev.Item3 = oval;
         curr.Item3 = val;
         disp(curr, prev);
@@ -201,21 +207,25 @@ public static class Values {
       var prev = current();
       var curr = current();
       return a.OnChange((val, oval) => {
+        prev = curr;
         prev.Item1 = oval;
         curr.Item1 = val;
         disp(curr, prev);
       }) +
       b.OnChange((val, oval) => {
+        prev = curr;
         prev.Item2 = oval;
         curr.Item2 = val;
         disp(curr, prev);
       }) +
       c.OnChange((val, oval) => {
+        prev = curr;
         prev.Item3 = oval;
         curr.Item3 = val;
         disp(curr, prev);
       }) +
       d.OnChange((val, oval) => {
+        prev = curr;
         prev.Item4 = oval;
         curr.Item4 = val;
         disp(curr, prev);
