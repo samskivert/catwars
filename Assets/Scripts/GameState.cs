@@ -62,5 +62,7 @@ public class CatState {
     this.faceId = faceId;
     this.gender = gender;
   }
+
+  public override string ToString () => $"{id}/{gender}/{name.current}";
 }
 }
