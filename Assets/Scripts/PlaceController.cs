@@ -9,6 +9,7 @@ using React;
 public class PlaceController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
   private ClanController clan;
 
+  public Place place;
   public Image image;
 
   private void Start () {

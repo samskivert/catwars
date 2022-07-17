@@ -1,11 +1,70 @@
 namespace catwars {
 
+using System;
 using System.Collections.Generic;
 using React;
+
+public enum Phase { PreGame = 0, Hunt, Forage, Eat, Social }
+
+public enum Place {
+  Lake,  River,  Marsh,      Field,    // Riverclan
+  Shore, Forest, TwoLegNest, Stream,   // Thunderclan
+  Swamp, Woods,  Clearing,   Brambles, // Shadowclan
+  Cliff, Moor,   HorsePlace, Wetlands, // Windclan
+}
+
+public enum Food {
+  Fish,
+
+  Finch,
+  Sparrow,
+  Starling,
+  Thrush,
+  Wren,
+
+  Rabbit,
+  Squirrel,
+
+  Mouse,
+  Rat,
+  Shrew,
+  Vole,
+}
+
+public static class PlaceUtil {
+
+  public static IList<Food> FoodsFor (this Place place) {
+    switch (place) {
+    case  Place.Lake: return new [] { Food.Fish };
+    case Place.River: return new [] { Food.Fish, Food.Wren };
+    case Place.Marsh: return new [] { Food.Thrush, Food.Vole };
+    case Place.Field: return new [] { Food.Starling, Food.Mouse };
+
+    case      Place.Shore: return new [] { Food.Wren, Food.Shrew };
+    case     Place.Forest: return new [] { Food.Sparrow, Food.Squirrel };
+    case Place.TwoLegNest: return new [] { Food.Thrush, Food.Mouse };
+    case     Place.Stream: return new [] { Food.Finch, Food.Vole };
+
+    case    Place.Swamp: return new [] { Food.Wren, Food.Rat };
+    case    Place.Woods: return new [] { Food.Sparrow, Food.Squirrel };
+    case Place.Clearing: return new [] { Food.Starling, Food.Vole };
+    case Place.Brambles: return new [] { Food.Finch, Food.Shrew };
+
+    case      Place.Cliff: return new [] { Food.Starling, Food.Shrew };
+    case       Place.Moor: return new [] { Food.Wren, Food.Rabbit };
+    case Place.HorsePlace: return new [] { Food.Sparrow, Food.Mouse };
+    case   Place.Wetlands: return new [] { Food.Thrush, Food.Vole };
+
+    default:
+      throw new Exception("Unknown place " + place);
+    }
+  }
+}
 
 public class GameState {
 
   public readonly IValue<int> day = Values.Mutable(0);
+  public readonly IValue<Phase> phase = Values.Mutable(Phase.PreGame);
 
   public ClanState shadow  = new ClanState("Shadow Clan");
   public ClanState thunder = new ClanState("Thunder Clan");
