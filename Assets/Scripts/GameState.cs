@@ -3,6 +3,7 @@ namespace catwars {
 using System;
 using System.Collections.Generic;
 using React;
+using Util;
 
 public enum Phase { PreGame = 0, Hunt, Forage, Eat, Social }
 
@@ -82,11 +83,16 @@ public class ClanState {
   public ClanState (string name) {
     this.name = name;
     for (var ii = 0; ii < 6; ii += 1) herbs.Add(ii, 0);
-    cats.Add(new CatState(1, 0, 0, 0, CatState.Gender.Male));
-    cats.Add(new CatState(2, 0, 0, 3, CatState.Gender.Female));
-    cats.Add(new CatState(3, 0, 0, 1, CatState.Gender.Male));
-    cats.Add(new CatState(4, 0, 0, 2, CatState.Gender.Female));
-    cats.Add(new CatState(5, 0, 0, 0, CatState.Gender.Male));
+    // TEMP: random kitties
+    var random = new System.Random();
+    var faces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
+    random.Shuffle(faces);
+    var ff = 0;
+    cats.Add(new CatState(1, 0, 0, faces[ff++], CatState.Gender.Male));
+    cats.Add(new CatState(2, 0, 0, faces[ff++], CatState.Gender.Female));
+    cats.Add(new CatState(3, 0, 0, faces[ff++], CatState.Gender.Male));
+    cats.Add(new CatState(4, 0, 0, faces[ff++], CatState.Gender.Female));
+    cats.Add(new CatState(5, 0, 0, faces[ff++], CatState.Gender.Male));
   }
 }
 
