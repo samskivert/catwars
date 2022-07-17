@@ -32,6 +32,15 @@ public enum Food {
   Vole,
 }
 
+public enum Herb {
+  Cobweb,
+  Burdock,
+  Juniper,
+  Goldenrod,
+  Yarrow,
+  Catmint,
+}
+
 public static class PlaceUtil {
 
   public static IList<Food> FoodsFor (this Place place) {
@@ -78,11 +87,11 @@ public class ClanState {
   public readonly string name;
   public readonly List<CatState> cats = new List<CatState>();
   public readonly IValue<int> freshKill = Values.Mutable(0);
-  public readonly MutableMap<int, int> herbs = RMaps.LocalMutable<int, int>();
+  public readonly MutableMap<Herb, int> herbs = RMaps.LocalMutable<Herb, int>();
 
   public ClanState (string name) {
     this.name = name;
-    for (var ii = 0; ii < 6; ii += 1) herbs.Add(ii, 0);
+    foreach (var herb in (Herb[])Enum.GetValues(typeof(Herb))) herbs.Add(herb, 0);
     // TEMP: random kitties
     var random = new System.Random();
     var faces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };

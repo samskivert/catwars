@@ -28,9 +28,10 @@ public class ClanController : MonoBehaviour {
     this.clan = clan;
     clanLabel.text = clan.name;
     foreach (var cat in clan.cats) AddCat(cat);
-    var idx = 0; foreach (var herb in herbs) {
-      herb.SetHerb(idx);
-      clan.herbs.GetValue(idx++).OnValue(herb.SetCount);
+    var idx = 0; foreach (var herbctl in herbs) {
+      var herb = (Herb)idx++;
+      herbctl.SetHerb(herb);
+      clan.herbs.GetValue(herb).OnValue(herbctl.SetCount);
     }
     clan.freshKill.OnValue(food.Show);
 
