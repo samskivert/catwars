@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using Util;
+
 public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, IEndDragHandler {
   private CatState cat;
   private ClanController clan;
+  private bool active;
 
   private RectTransform parentCanvas;
   private Vector2 neutralPos;
@@ -26,7 +29,13 @@ public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, I
     faceImage.sprite = faceSprites[cat.faceId];
   }
 
+  public void SetActive (bool active) {
+    this.active = active;
+    faceImage.SetAlpha(active ? 1f : 0.5f);
+  }
+
   public void OnBeginDrag (PointerEventData data) {
+    if (!active) return;
     faceDragRect.transform.SetParent(parentCanvas.transform);
     neutralPos = faceDragRect.localPosition;
     dragStart = faceDragRect.localPosition;

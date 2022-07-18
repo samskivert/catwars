@@ -18,6 +18,8 @@ public class CatController : MonoBehaviour {
       hungers[1].gameObject.SetActive(hunger >= CatState.Hunger.Hungry);
       hungers[2].gameObject.SetActive(hunger >= CatState.Hunger.Starving);
     });
+
+    cat.acted.OnValue(acted => face.SetActive(!acted));
   }
 }
 

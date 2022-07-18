@@ -2,6 +2,8 @@ namespace catwars {
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+
 using React;
 using Util;
 
@@ -43,7 +45,7 @@ public enum Herb {
 
 public static class PlaceUtil {
 
-  public static IList<Food> FoodsFor (this Place place) {
+  public static IList<Food> Foods (this Place place) {
     switch (place) {
     case  Place.Lake: return new [] { Food.Fish };
     case Place.River: return new [] { Food.Fish, Food.Wren };
@@ -73,35 +75,49 @@ public static class PlaceUtil {
 
 public class GameState {
 
-  public readonly IValue<int> day = Values.Mutable(0);
-  public readonly IValue<Phase> phase = Values.Mutable(Phase.PreGame);
+  public readonly IMutable<int> day = Values.Mutable(0);
+  public readonly IMutable<Phase> phase = Values.Mutable(Phase.PreGame);
 
-  public ClanState shadow  = new ClanState("Shadow Clan");
-  public ClanState thunder = new ClanState("Thunder Clan");
-  public ClanState river   = new ClanState("River Clan");
-  public ClanState wind    = new ClanState("Wind Clan");
+  public readonly ClanState shadow;
+  public readonly ClanState thunder;
+  public readonly ClanState river;
+  public readonly ClanState wind;
+
+  public readonly System.Random random = new System.Random();
+
+  public GameState () {
+    shadow  = new ClanState(this, "Shadow Clan");
+    thunder = new ClanState(this, "Thunder Clan");
+    river   = new ClanState(this, "River Clan");
+    wind    = new ClanState(this, "Wind Clan");
+  }
+
+  public void Start () {
+    phase.Update(Phase.Hunt);
+  }
 }
 
 public class ClanState {
 
+  public readonly GameState game;
   public readonly string name;
   public readonly List<CatState> cats = new List<CatState>();
-  public readonly IValue<int> freshKill = Values.Mutable(0);
+  public readonly IMutable<int> freshKill = Values.Mutable(0);
   public readonly MutableMap<Herb, int> herbs = RMaps.LocalMutable<Herb, int>();
 
-  public ClanState (string name) {
+  public ClanState (GameState game, string name) {
+    this.game = game;
     this.name = name;
     foreach (var herb in (Herb[])Enum.GetValues(typeof(Herb))) herbs.Add(herb, 0);
     // TEMP: random kitties
-    var random = new System.Random();
     var faces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
-    random.Shuffle(faces);
+    game.random.Shuffle(faces);
     var ff = 0;
-    cats.Add(new CatState(1, 0, 0, faces[ff++], CatState.Gender.Male));
-    cats.Add(new CatState(2, 0, 0, faces[ff++], CatState.Gender.Female));
-    cats.Add(new CatState(3, 0, 0, faces[ff++], CatState.Gender.Male));
-    cats.Add(new CatState(4, 0, 0, faces[ff++], CatState.Gender.Female));
-    cats.Add(new CatState(5, 0, 0, faces[ff++], CatState.Gender.Male));
+    cats.Add(new CatState(this, 1, 0, 0, faces[ff++], CatState.Gender.Male));
+    cats.Add(new CatState(this, 2, 0, 0, faces[ff++], CatState.Gender.Female));
+    cats.Add(new CatState(this, 3, 0, 0, faces[ff++], CatState.Gender.Male));
+    cats.Add(new CatState(this, 4, 0, 0, faces[ff++], CatState.Gender.Female));
+    cats.Add(new CatState(this, 5, 0, 0, faces[ff++], CatState.Gender.Male));
   }
 }
 
@@ -114,27 +130,64 @@ public class CatState {
   public enum Stomach { Normal = 0, BellyAche, Poisoned }
   public enum Illness { None = 0, WhiteCough, GreenCough }
 
+  public readonly ClanState clan;
   public readonly int id;
   public readonly int parentId;
   public readonly int birthday;
   public readonly int faceId;
   public readonly Gender gender;
 
-  public readonly IValue<string> name = Values.Mutable("");
-  public readonly IValue<Role> role = Values.Mutable(Role.Warrior);
-  public readonly IValue<Hunger> hunger = Values.Mutable(Hunger.Full);
-  public readonly IValue<Injury> injury = Values.Mutable(Injury.None);
-  public readonly IValue<Stomach> stomach = Values.Mutable(Stomach.Normal);
-  public readonly IValue<Illness> illness = Values.Mutable(Illness.None);
+  public readonly IMutable<string> name = Values.Mutable("");
+  public readonly IMutable<Role> role = Values.Mutable(Role.Warrior);
+  public readonly IMutable<Hunger> hunger = Values.Mutable(Hunger.Full);
+  public readonly IMutable<Injury> injury = Values.Mutable(Injury.None);
+  public readonly IMutable<Stomach> stomach = Values.Mutable(Stomach.Normal);
+  public readonly IMutable<Illness> illness = Values.Mutable(Illness.None);
 
-  public readonly IValue<int> pregnant = Values.Mutable(0);
+  public readonly IMutable<bool> acted = Values.Mutable(false);
+  public readonly IMutable<int> pregnant = Values.Mutable(0);
 
-  public CatState (int id, int parentId, int birthday, int faceId, Gender gender) {
+  public CatState (ClanState clan, int id, int parentId, int birthday, int faceId, Gender gender) {
+    this.clan = clan;
     this.id = id;
     this.parentId = parentId;
     this.birthday = birthday;
     this.faceId = faceId;
     this.gender = gender;
+  }
+
+  public void OnDrop (Place place) {
+    if (acted.current) return; // cat already acted this turn
+
+    var role = this.role.current;
+    switch (clan.game.phase.current) {
+    case Phase.Hunt:
+      var rolls = 4 - (int)hunger.current;
+      // TODO: add bonuses
+      var foods = place.Foods();
+      for (var rr = 0; rr < rolls; rr += 1) {
+        if (clan.game.random.Next(4) == 0) {
+          // TODO: report found food
+          var food = clan.game.random.Pick(foods);
+          // TODO: track which foods were found
+          clan.freshKill.UpdateVia(v => v+1);
+        } else {
+          // TODO: report found nothing
+          Debug.Log("Found no prey " + this + " @ " + place);
+        }
+      }
+      acted.Update(true);
+      break;
+    case Phase.Forage:
+      // TODO: forage tables & foraging
+      if (role == Role.Medicine) {
+        Debug.Log("TODO: forage " + this + " @ " + place);
+      }
+      break;
+    default:
+      Debug.Log("Cat dropped " + this + " @ " + place + " / " + clan.game.phase.current);
+      break;
+    }
   }
 
   public override string ToString () => $"{id}/{gender}/{name.current}";

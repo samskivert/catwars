@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour {
     clans[1].Init(state, state.thunder);
     clans[2].Init(state, state.river);
     clans[3].Init(state, state.wind);
+    state.Start();
   }
 }
 

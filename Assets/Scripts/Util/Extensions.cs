@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 using React;
@@ -93,6 +94,26 @@ public static class Extensions {
     return PickValues(dropdown, values, Array.IndexOf(values, start));
   }
 
+  /// <summary>Sets the alpha level of `text` to `alpha`, preserving other channels.</summary>
+  public static void SetAlpha (this TMP_Text text, float alpha) {
+    var color = text.color;
+    color.a = alpha;
+    text.color = color;
+  }
+
+  /// <summary>Sets the alpha level of `image` to `alpha`, preserving other channels.</summary>
+  public static void SetAlpha (this Image image, float alpha) {
+    var color = image.color;
+    color.a = alpha;
+    image.color = color;
+  }
+
+  /// <summary>Sets the alpha level of `image` to `alpha`, preserving other channels.</summary>
+  public static void SetAlpha (this RawImage image, float alpha) {
+    var color = image.color;
+    color.a = alpha;
+    image.color = color;
+  }
 }
 
 }

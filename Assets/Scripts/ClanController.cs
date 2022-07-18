@@ -51,7 +51,7 @@ public class ClanController : MonoBehaviour {
   }
 
   private void OnCatDropped (CatState cat, PlaceController place) {
-    Debug.Log("Cat dropped " + cat + " => " + place);
+    cat.OnDrop(place.place);
   }
 }
 
