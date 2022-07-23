@@ -78,6 +78,7 @@ public class GameState {
 
   public readonly IMutable<int> day = Values.Mutable(0);
   public readonly IMutable<Phase> phase = Values.Mutable(Phase.PreGame);
+  public readonly MutableSet<ClanState> phaseDone = RSets.LocalMutable<ClanState>();
 
   public readonly ClanState shadow;
   public readonly ClanState thunder;
@@ -93,6 +94,10 @@ public class GameState {
     thunder = new ClanState(this, "Thunder Clan");
     river   = new ClanState(this, "River Clan");
     wind    = new ClanState(this, "Wind Clan");
+
+    phaseDone.OnValue(cs => {
+      if (cs.Count == 4) OnPhaseDone();
+    });
   }
 
   public void Start () => StartNewDay();
@@ -103,6 +108,14 @@ public class GameState {
     phase.Update(Phase.Hunt);
     messages.Emit($"Time to Hunt");
   }
+
+  private void OnPhaseDone () {
+    if (phase.current == Phase.Hunt) {
+      phase.Update(Phase.Eat);
+      messages.Emit($"Time to Eat");
+      phaseDone.Clear();
+    }
+  }
 }
 
 public class ClanState {
@@ -112,6 +125,7 @@ public class ClanState {
   public readonly List<CatState> cats = new List<CatState>();
   public readonly IMutable<int> freshKill = Values.Mutable(0);
   public readonly MutableMap<Herb, int> herbs = RMaps.LocalMutable<Herb, int>();
+  public readonly MutableSet<int> acted = RSets.LocalMutable<int>();
 
   public readonly Emitter<string> messages = new Emitter<string>();
 
@@ -119,15 +133,35 @@ public class ClanState {
     this.game = game;
     this.name = name;
     foreach (var herb in (Herb[])Enum.GetValues(typeof(Herb))) herbs.Add(herb, 0);
+
     // TEMP: random kitties
     var faces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
     game.random.Shuffle(faces);
     var ff = 0;
-    cats.Add(new CatState(this, 1, 0, 0, faces[ff++], CatState.Gender.Male));
-    cats.Add(new CatState(this, 2, 0, 0, faces[ff++], CatState.Gender.Female));
-    cats.Add(new CatState(this, 3, 0, 0, faces[ff++], CatState.Gender.Male));
-    cats.Add(new CatState(this, 4, 0, 0, faces[ff++], CatState.Gender.Female));
-    cats.Add(new CatState(this, 5, 0, 0, faces[ff++], CatState.Gender.Male));
+    AddCat(1, 0, faces[ff++], CatState.Gender.Male);
+    AddCat(2, 0, faces[ff++], CatState.Gender.Female);
+    AddCat(3, 0, faces[ff++], CatState.Gender.Male);
+    AddCat(4, 0, faces[ff++], CatState.Gender.Female);
+    AddCat(5, 0, faces[ff++], CatState.Gender.Male);
+
+    acted.CountValue.OnValue(ac => {
+      if (ac >= CanAct) Done();
+    });
+  }
+
+  public void Done () {
+    game.phaseDone.Add(this);
+  }
+
+  private int CanAct => cats.Count(cc => cc.CanAct(game.phase.current));
+
+  private void AddCat (int id, int parentId, int faceId, CatState.Gender gender) {
+    var state = new CatState(this, id, parentId, game.day.current, faceId, gender);
+    state.acted.OnEmit(acted => {
+      if (acted) this.acted.Add(id);
+      else this.acted.Remove(id);
+    });
+    cats.Add(state);
   }
 }
 
@@ -168,6 +202,11 @@ public class CatState {
     // TODO
     this.name.Update($"Cat {id}");
     this.role.Update(id == 1 ? Role.Leader : id == 2 ? Role.Medicine : Role.Warrior);
+  }
+
+  public bool CanAct (Phase phase) {
+    if (phase == Phase.Hunt) return this.role.current != Role.Kit && this.pregnant.current == 0;
+    else return true; // TODO
   }
 
   public void OnDrop (Place place) {

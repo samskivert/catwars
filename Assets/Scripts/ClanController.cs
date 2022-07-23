@@ -16,12 +16,12 @@ public class ClanController : MonoBehaviour {
   public FoodController food;
   public MessagesController messages;
 
-  public readonly IMutable<CatState> draggedCat = Values.Mutable<CatState>(null);
-  public readonly IMutable<PlaceController> hoveredPlace = Values.Mutable<PlaceController>(null);
-  public readonly IValue<(CatState, PlaceController)> dragInfo;
+  public readonly IMutable<object> draggedItem = Values.Mutable<object>(null);
+  public readonly IMutable<object> hoveredTarget = Values.Mutable<object>(null);
+  public readonly IValue<(object, object)> dragInfo;
 
   private ClanController () {
-    dragInfo = Values.Join(draggedCat, hoveredPlace);
+    dragInfo = Values.Join(draggedItem, hoveredTarget);
   }
 
   public void Init (GameState game, ClanState clan) {
@@ -37,11 +37,11 @@ public class ClanController : MonoBehaviour {
     clan.freshKill.OnValue(food.Show);
 
     dragInfo.OnChange((info, oinfo) => {
-      var (cat, place) = info;
-      var (ocat, oplace) = oinfo;
+      var (item, tgt) = info;
+      var (oitem, otgt) = oinfo;
       // if we transition from cat to no cat while hovering over a place, we dropped a cat there
-      if (oplace != null && place == oplace &&
-          cat == null && ocat != null) OnCatDropped(oinfo.Item1, info.Item2);
+      if (tgt is Place place && tgt == otgt &&
+          item == null && oitem is CatState cat) OnCatDropped(cat, place);
     });
 
     clan.messages.OnEmit(messages.Show);
@@ -53,8 +53,8 @@ public class ClanController : MonoBehaviour {
     catObj.SetActive(true);
   }
 
-  private void OnCatDropped (CatState cat, PlaceController place) {
-    cat.OnDrop(place.place);
+  private void OnCatDropped (CatState cat, Place place) {
+    cat.OnDrop(place);
   }
 }
 
