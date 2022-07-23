@@ -2,6 +2,7 @@ namespace catwars {
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using React;
@@ -105,6 +106,8 @@ public class ClanState {
   public readonly IMutable<int> freshKill = Values.Mutable(0);
   public readonly MutableMap<Herb, int> herbs = RMaps.LocalMutable<Herb, int>();
 
+  public readonly Emitter<string> messages = new Emitter<string>();
+
   public ClanState (GameState game, string name) {
     this.game = game;
     this.name = name;
@@ -154,9 +157,12 @@ public class CatState {
     this.birthday = birthday;
     this.faceId = faceId;
     this.gender = gender;
+
+    this.name.Update($"Cat {id}"); // TODO
   }
 
   public void OnDrop (Place place) {
+    Debug.Log("OnDrop " + this + " => " + place);
     if (acted.current) return; // cat already acted this turn
 
     var role = this.role.current;
@@ -165,17 +171,17 @@ public class CatState {
       var rolls = 4 - (int)hunger.current;
       // TODO: add bonuses
       var foods = place.Foods();
+      List<Food> caught = null;
       for (var rr = 0; rr < rolls; rr += 1) {
         if (clan.game.random.Next(4) == 0) {
-          // TODO: report found food
           var food = clan.game.random.Pick(foods);
+          caught ??= new List<Food>();
+          caught.Add(food);
           // TODO: track which foods were found
           clan.freshKill.UpdateVia(v => v+1);
-        } else {
-          // TODO: report found nothing
-          Debug.Log("Found no prey " + this + " @ " + place);
         }
       }
+      clan.messages.Emit($"{name.current} caught {FormatCatch(caught)}.");
       acted.Update(true);
       break;
     case Phase.Forage:
@@ -187,6 +193,17 @@ public class CatState {
     default:
       Debug.Log("Cat dropped " + this + " @ " + place + " / " + clan.game.phase.current);
       break;
+    }
+  }
+
+  private static string FormatCatch (List<Food> caught) {
+    if (caught == null) return "no prey";
+    else if (caught.Count == 1) return $"a {caught[0]}";
+    else if (caught.Count == 2) return $"a {caught[0]} and a {caught[1]}";
+    else {
+      var most = String.Join(", ", caught.Take(caught.Count-1));
+      var last = caught[caught.Count-1];
+      return $"a {most} and {last}";
     }
   }
 
