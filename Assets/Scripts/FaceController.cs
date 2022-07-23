@@ -46,6 +46,7 @@ public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, I
   }
 
   public void OnDrag (PointerEventData data) {
+    if (!active) return;
     if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
       parentCanvas, data.position, data.pressEventCamera, out var dragPos)) {
       var offsetToOriginal = dragPos - dragStart;
@@ -54,6 +55,7 @@ public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, I
   }
 
   public void OnEndDrag (PointerEventData eventData) {
+    if (!active) return;
     faceDragRect.localPosition = neutralPos;
     faceDragRect.transform.SetParent(transform);
     clan.draggedCat.Update(null);
