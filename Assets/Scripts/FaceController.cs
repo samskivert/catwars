@@ -31,7 +31,7 @@ public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, I
 
   public void SetActive (bool active) {
     this.active = active;
-    faceImage.SetAlpha(active ? 1f : 0.5f);
+    faceImage.SetAlpha(active ? 1f : 0.25f);
   }
 
   public void OnBeginDrag (PointerEventData data) {
@@ -60,5 +60,4 @@ public class FaceController : MonoBehaviour,  IBeginDragHandler, IDragHandler, I
     faceImage.raycastTarget = true;
   }
 }
-
 }

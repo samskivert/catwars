@@ -84,6 +84,8 @@ public class GameState {
   public readonly ClanState river;
   public readonly ClanState wind;
 
+  public readonly Emitter<string> messages = new Emitter<string>();
+
   public readonly System.Random random = new System.Random();
 
   public GameState () {
@@ -93,8 +95,13 @@ public class GameState {
     wind    = new ClanState(this, "Wind Clan");
   }
 
-  public void Start () {
+  public void Start () => StartNewDay();
+
+  private void StartNewDay () {
+    day.UpdateVia(d => d+1);
+    messages.Emit($"Day {day.current}");
     phase.Update(Phase.Hunt);
+    messages.Emit($"Time to Hunt");
   }
 }
 
@@ -158,20 +165,50 @@ public class CatState {
     this.faceId = faceId;
     this.gender = gender;
 
-    this.name.Update($"Cat {id}"); // TODO
+    // TODO
+    this.name.Update($"Cat {id}");
+    this.role.Update(id == 1 ? Role.Leader : id == 2 ? Role.Medicine : Role.Warrior);
   }
 
   public void OnDrop (Place place) {
     Debug.Log("OnDrop " + this + " => " + place);
     if (acted.current) return; // cat already acted this turn
 
-    var role = this.role.current;
-    switch (clan.game.phase.current) {
-    case Phase.Hunt:
-      var rolls = 4 - (int)hunger.current;
-      // TODO: add bonuses
+    // if cat is pregnant, they can't hunt
+    if (pregnant.current > 0) {
+      clan.messages.Emit($"{name.current} can't hunt. They are pregnant.");
+      return;
+    }
+
+    var hunger = (int)this.hunger.current;
+    switch (this.role.current) {
+    case Role.Kit:
+      clan.messages.Emit($"{name.current} can't hunt. They are just a Kit.");
+      break;
+
+    case Role.Medicine:
+      List<Herb> found = null;
+      for (var rr = 0; rr <= hunger; rr += 1) {
+        if (clan.game.random.Next(4) == 0) {
+          var herb = clan.game.random.Pick((Herb[])Enum.GetValues(typeof(Herb)));
+          found ??= new List<Herb>();
+          found.Add(herb);
+          clan.herbs.Update(herb, h => h+1);
+        }
+      }
+      clan.messages.Emit($"{name.current} found {FormatFound(found)}.");
+      acted.Update(true);
+      break;
+
+    default:
       var foods = place.Foods();
       List<Food> caught = null;
+      var rolls = 4-hunger;
+      if (this.role.current == Role.Apprentice) rolls -= 1;
+      if (this.injury.current != Injury.None) rolls -= 1;
+      if (this.stomach.current != Stomach.Normal) rolls -= 1;
+      if (this.illness.current != Illness.None) rolls -= 1;
+      // TODO: add bonuses
       for (var rr = 0; rr < rolls; rr += 1) {
         if (clan.game.random.Next(4) == 0) {
           var food = clan.game.random.Pick(foods);
@@ -184,15 +221,6 @@ public class CatState {
       clan.messages.Emit($"{name.current} caught {FormatCatch(caught)}.");
       acted.Update(true);
       break;
-    case Phase.Forage:
-      // TODO: forage tables & foraging
-      if (role == Role.Medicine) {
-        Debug.Log("TODO: forage " + this + " @ " + place);
-      }
-      break;
-    default:
-      Debug.Log("Cat dropped " + this + " @ " + place + " / " + clan.game.phase.current);
-      break;
     }
   }
 
@@ -204,6 +232,17 @@ public class CatState {
       var most = String.Join(", ", caught.Take(caught.Count-1));
       var last = caught[caught.Count-1];
       return $"a {most} and {last}";
+    }
+  }
+
+  private static string FormatFound (List<Herb> found) {
+    if (found == null) return "nothing";
+    else if (found.Count == 1) return $"{found[0]}";
+    else if (found.Count == 2) return $"{found[0]} and {found[1]}";
+    else {
+      var most = String.Join(", ", found.Take(found.Count-1));
+      var last = found[found.Count-1];
+      return $"{most} and {last}";
     }
   }
 

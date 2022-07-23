@@ -1,26 +1,20 @@
 namespace catwars {
 
-using System.Collections.Generic;
-
 using UnityEngine;
 using TMPro;
 
 using React;
-using Util;
 
 public class ClanController : MonoBehaviour {
   private GameState game;
   private ClanState clan;
-  private List<string> messages = new List<string>();
 
   public TMP_Text clanLabel;
   public GameObject cats;
   public GameObject catPrefab;
   public HerbController[] herbs;
   public FoodController food;
-
-  public GameObject feedbackPanel;
-  public TMP_Text feedbackLabel;
+  public MessagesController messages;
 
   public readonly IMutable<CatState> draggedCat = Values.Mutable<CatState>(null);
   public readonly IMutable<PlaceController> hoveredPlace = Values.Mutable<PlaceController>(null);
@@ -50,24 +44,7 @@ public class ClanController : MonoBehaviour {
           cat == null && ocat != null) OnCatDropped(oinfo.Item1, info.Item2);
     });
 
-    clan.messages.OnEmit(ShowFeedback);
-  }
-
-  public void ShowFeedback (string message) {
-    if (feedbackPanel.activeSelf) {
-      messages.Add(message);
-      return;
-    }
-    feedbackLabel.text = message;
-    feedbackPanel.SetActive(true);
-    this.RunAfter(2, () => {
-      feedbackPanel.SetActive(false);
-      if (messages.Count > 0) {
-        var message = messages[0];
-        messages.RemoveAt(0);
-        ShowFeedback(message);
-      }
-    });
+    clan.messages.OnEmit(messages.Show);
   }
 
   private void AddCat (CatState cat) {
