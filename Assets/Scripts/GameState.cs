@@ -17,18 +17,13 @@ public enum Place {
   Cliff, Moor,   HorsePlace, Wetlands, // Windclan
 }
 
-public enum Food {
+public enum Prey {
   Fish,
-
   Finch,
-  Sparrow,
   Starling,
-  Thrush,
   Wren,
-
   Rabbit,
   Squirrel,
-
   Mouse,
   Rat,
   Shrew,
@@ -46,27 +41,27 @@ public enum Herb {
 
 public static class PlaceUtil {
 
-  public static IList<Food> Foods (this Place place) {
+  public static IList<Prey> Preys (this Place place) {
     switch (place) {
-    case  Place.Lake: return new [] { Food.Fish };
-    case Place.River: return new [] { Food.Fish, Food.Wren };
-    case Place.Marsh: return new [] { Food.Thrush, Food.Vole };
-    case Place.Field: return new [] { Food.Starling, Food.Mouse };
+    case  Place.Lake: return new [] { Prey.Fish };
+    case Place.River: return new [] { Prey.Fish, Prey.Wren };
+    case Place.Marsh: return new [] { Prey.Finch, Prey.Vole };
+    case Place.Field: return new [] { Prey.Starling, Prey.Mouse };
 
-    case      Place.Shore: return new [] { Food.Wren, Food.Shrew };
-    case     Place.Forest: return new [] { Food.Sparrow, Food.Squirrel };
-    case Place.TwoLegNest: return new [] { Food.Thrush, Food.Mouse };
-    case     Place.Stream: return new [] { Food.Finch, Food.Vole };
+    case      Place.Shore: return new [] { Prey.Wren, Prey.Shrew };
+    case     Place.Forest: return new [] { Prey.Starling, Prey.Squirrel };
+    case Place.TwoLegNest: return new [] { Prey.Wren, Prey.Mouse };
+    case     Place.Stream: return new [] { Prey.Starling, Prey.Vole };
 
-    case    Place.Swamp: return new [] { Food.Wren, Food.Rat };
-    case    Place.Woods: return new [] { Food.Sparrow, Food.Squirrel };
-    case Place.Clearing: return new [] { Food.Starling, Food.Vole };
-    case Place.Brambles: return new [] { Food.Finch, Food.Shrew };
+    case    Place.Swamp: return new [] { Prey.Wren, Prey.Rat };
+    case    Place.Woods: return new [] { Prey.Finch, Prey.Squirrel };
+    case Place.Clearing: return new [] { Prey.Starling, Prey.Vole };
+    case Place.Brambles: return new [] { Prey.Finch, Prey.Shrew };
 
-    case      Place.Cliff: return new [] { Food.Starling, Food.Shrew };
-    case       Place.Moor: return new [] { Food.Wren, Food.Rabbit };
-    case Place.HorsePlace: return new [] { Food.Sparrow, Food.Mouse };
-    case   Place.Wetlands: return new [] { Food.Thrush, Food.Vole };
+    case      Place.Cliff: return new [] { Prey.Starling, Prey.Shrew };
+    case       Place.Moor: return new [] { Prey.Wren, Prey.Rabbit };
+    case Place.HorsePlace: return new [] { Prey.Finch, Prey.Mouse };
+    case   Place.Wetlands: return new [] { Prey.Wren, Prey.Vole };
 
     default:
       throw new Exception("Unknown place " + place);
@@ -123,7 +118,7 @@ public class ClanState {
   public readonly GameState game;
   public readonly string name;
   public readonly List<CatState> cats = new List<CatState>();
-  public readonly IMutable<int> freshKill = Values.Mutable(0);
+  public readonly MutableMap<int, Prey> freshKill = RMaps.LocalMutable<int, Prey>();
   public readonly MutableMap<Herb, int> herbs = RMaps.LocalMutable<Herb, int>();
   public readonly MutableSet<int> acted = RSets.LocalMutable<int>();
 
@@ -151,6 +146,11 @@ public class ClanState {
 
   public void Done () {
     game.phaseDone.Add(this);
+  }
+
+  public void AddFreshKill (Prey prey) {
+    var index = freshKill.Count;
+    freshKill.Add(index, prey);
   }
 
   private int CanAct => cats.Count(cc => cc.CanAct(game.phase.current));
@@ -240,8 +240,8 @@ public class CatState {
       break;
 
     default:
-      var foods = place.Foods();
-      List<Food> caught = null;
+      var preys = place.Preys();
+      List<Prey> caught = null;
       var rolls = 4-hunger;
       if (this.role.current == Role.Apprentice) rolls -= 1;
       if (this.injury.current != Injury.None) rolls -= 1;
@@ -250,11 +250,10 @@ public class CatState {
       // TODO: add bonuses
       for (var rr = 0; rr < rolls; rr += 1) {
         if (clan.game.random.Next(4) == 0) {
-          var food = clan.game.random.Pick(foods);
-          caught ??= new List<Food>();
-          caught.Add(food);
-          // TODO: track which foods were found
-          clan.freshKill.UpdateVia(v => v+1);
+          var prey = clan.game.random.Pick(preys);
+          caught ??= new List<Prey>();
+          caught.Add(prey);
+          clan.AddFreshKill(prey);
         }
       }
       clan.messages.Emit($"{name.current} caught {FormatCatch(caught)}.");
@@ -263,7 +262,7 @@ public class CatState {
     }
   }
 
-  private static string FormatCatch (List<Food> caught) {
+  private static string FormatCatch (List<Prey> caught) {
     if (caught == null) return "no prey";
     else if (caught.Count == 1) return $"a {caught[0]}";
     else if (caught.Count == 2) return $"a {caught[0]} and a {caught[1]}";

@@ -5,7 +5,7 @@ using TMPro;
 
 public class HerbController : DraggableItem {
 
-  public Sprite[] herbSprites;
+  [EnumArray(typeof(Herb))] public Sprite[] herbSprites;
   public TMP_Text herbCount;
 
   public void SetHerb (Herb herb) {

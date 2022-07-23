@@ -9,12 +9,13 @@ public class ClanController : MonoBehaviour {
   private GameState game;
   private ClanState clan;
 
+  public MessagesController messages;
   public TMP_Text clanLabel;
   public GameObject cats;
   public GameObject catPrefab;
   public HerbController[] herbs;
-  public FoodController food;
-  public MessagesController messages;
+  public GameObject freshKill;
+  public GameObject preyPrefab;
 
   public readonly IMutable<object> draggedItem = Values.Mutable<object>(null);
   public readonly IMutable<object> hoveredTarget = Values.Mutable<object>(null);
@@ -29,12 +30,21 @@ public class ClanController : MonoBehaviour {
     this.clan = clan;
     clanLabel.text = clan.name;
     foreach (var cat in clan.cats) AddCat(cat);
-    var idx = 0; foreach (var herbctl in herbs) {
-      var herb = (Herb)idx++;
+
+    var hidx = 0; foreach (var herbctl in herbs) {
+      var herb = (Herb)hidx++;
       herbctl.SetHerb(herb);
       clan.herbs.GetValue(herb).OnValue(herbctl.SetCount);
     }
-    clan.freshKill.OnValue(food.Show);
+
+    clan.freshKill.OnEntries((idx, prey, oprey) => {
+      var tx = freshKill.transform;
+      if (tx.childCount < idx) tx.GetChild(idx).GetComponent<PreyController>().SetPrey(prey);
+      else Instantiate(preyPrefab, tx).GetComponent<PreyController>().SetPrey(prey);
+    });
+    clan.freshKill.OnRemove((idx, oprey) => {
+      Destroy(freshKill.transform.GetChild(idx));
+    });
 
     dragInfo.OnChange((info, oinfo) => {
       var (item, tgt) = info;
