@@ -7,8 +7,9 @@ using UnityEngine.UI;
 using Util;
 
 public class DraggableItem : MonoBehaviour,  IBeginDragHandler, IDragHandler, IEndDragHandler {
-  private bool active;
+  private bool active = true;
   private ClanController clan;
+  private Transform oldParent;
 
   private RectTransform parentCanvas;
   private Vector2 neutralPos;
@@ -29,6 +30,7 @@ public class DraggableItem : MonoBehaviour,  IBeginDragHandler, IDragHandler, IE
 
   public void OnBeginDrag (PointerEventData data) {
     if (!active) return;
+    oldParent = dragRect.transform.parent;
     dragRect.transform.SetParent(parentCanvas.transform);
     neutralPos = dragRect.localPosition;
     dragStart = dragRect.localPosition;
@@ -50,7 +52,7 @@ public class DraggableItem : MonoBehaviour,  IBeginDragHandler, IDragHandler, IE
   public void OnEndDrag (PointerEventData eventData) {
     if (!active) return;
     dragRect.localPosition = neutralPos;
-    dragRect.transform.SetParent(transform);
+    dragRect.transform.SetParent(oldParent);
     clan.draggedItem.Update(null);
     image.raycastTarget = true;
   }
