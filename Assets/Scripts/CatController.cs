@@ -1,9 +1,8 @@
 namespace catwars {
 
-using UnityEngine;
 using UnityEngine.UI;
 
-public class CatController : MonoBehaviour {
+public class CatController : DropTarget {
   private CatState cat;
 
   public FaceController face;
@@ -21,6 +20,11 @@ public class CatController : MonoBehaviour {
 
     cat.acted.OnValue(acted => face.SetActive(!acted));
   }
+
+  public override bool CanDrop (Phase phase, object dragState) =>
+    phase == Phase.Eat && dragState is Prey;
+
+  protected override object DropState => cat;
 }
 
 }

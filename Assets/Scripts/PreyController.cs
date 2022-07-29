@@ -12,6 +12,8 @@ public class PreyController : DraggableItem {
     this.prey = prey;
     image.sprite = sprites[(int)prey];
   }
+
+  protected override object DragState => prey;
 }
 
 }

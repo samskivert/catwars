@@ -312,6 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9426a9838da394d80a56fe22d2c14f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 6728255207310781316}
   face: {fileID: 7606182216772579769}
   hungers:
   - {fileID: 6115355320602106972}
@@ -495,6 +496,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7579717607536255005, guid: 883af3c156b5d4ccc86105726e787cf6, type: 3}
   m_PrefabInstance: {fileID: 9222045178312215585}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6728255207310781316 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2496359014951626661, guid: 883af3c156b5d4ccc86105726e787cf6, type: 3}
+  m_PrefabInstance: {fileID: 9222045178312215585}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7606182216772579769 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -7604926827022762600, guid: 883af3c156b5d4ccc86105726e787cf6, type: 3}

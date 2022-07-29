@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using React;
+
 public class DropTarget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
   private ClanController clan;
 
@@ -11,12 +13,19 @@ public class DropTarget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
   private void Start () {
     clan = GetComponentInParent<ClanController>();
-    clan.dragInfo.OnValue(pair => {
-      var (item, hov) = pair;
-      if (item != null && DropState.Equals(hov)) image.color = Color.red;
-      else image.color = Color.white;
+    var hoveredV = clan.dragInfo.Map(
+      pair => pair.Item1 != null && DropState.Equals(pair.Item2) && CanDrop(clan.game.phase.current, pair.Item1));
+
+    Color ocolor = image.color;
+    hoveredV.OnEmit(hovered => {
+      if (hovered) {
+        ocolor = image.color;
+        image.color = Color.red;
+      } else image.color = ocolor;
     });
   }
+
+  public virtual bool CanDrop (Phase phase, object dragState) => false;
 
   public void OnPointerEnter (PointerEventData eventData) {
     clan.hoveredTarget.Update(DropState);

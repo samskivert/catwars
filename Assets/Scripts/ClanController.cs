@@ -1,13 +1,12 @@
 namespace catwars {
 
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 using React;
 
 public class ClanController : MonoBehaviour {
-  private GameState game;
-  private ClanState clan;
 
   public MessagesController messages;
   public TMP_Text clanLabel;
@@ -16,6 +15,10 @@ public class ClanController : MonoBehaviour {
   public HerbController[] herbs;
   public GameObject freshKill;
   public GameObject preyPrefab;
+  public Button doneButton;
+
+  public GameState game { get; private set; }
+  public ClanState clan { get; private set; }
 
   public readonly IMutable<object> draggedItem = Values.Mutable<object>(null);
   public readonly IMutable<object> hoveredTarget = Values.Mutable<object>(null);
@@ -39,32 +42,39 @@ public class ClanController : MonoBehaviour {
 
     clan.freshKill.OnEntries((idx, prey, oprey) => {
       var tx = freshKill.transform;
-      if (tx.childCount < idx) tx.GetChild(idx).GetComponent<PreyController>().SetPrey(prey);
+      if (idx < tx.childCount) tx.GetChild(idx).GetComponent<PreyController>().SetPrey(prey);
       else Instantiate(preyPrefab, tx).GetComponent<PreyController>().SetPrey(prey);
     });
     clan.freshKill.OnRemove((idx, oprey) => {
-      Destroy(freshKill.transform.GetChild(idx));
+      Destroy(freshKill.transform.GetChild(idx).gameObject);
     });
+
+    clan.messages.OnEmit(messages.Show);
 
     dragInfo.OnChange((info, oinfo) => {
       var (item, tgt) = info;
       var (oitem, otgt) = oinfo;
-      // if we transition from cat to no cat while hovering over a place, we dropped a cat there
-      if (tgt is Place place && tgt == otgt &&
-          item == null && oitem is CatState cat) OnCatDropped(cat, place);
+      // if we transition from item to no item while hovering over the same target, it's a drop
+      if (tgt == otgt && item == null && oitem != null) HandleDrop(oitem, tgt);
     });
 
-    clan.messages.OnEmit(messages.Show);
+    game.phaseDone.ContainsValue(clan).OnValue(done => {
+      doneButton.interactable = !done;
+    });
+    doneButton.onClick.AddListener(() => clan.Done());
+  }
+
+  private void HandleDrop (object item, object tgt) {
+    // if we transition from cat to no cat while hovering over a place, we dropped a cat there
+    if (tgt is Place place && item is CatState cati) cati.OnDrop(place);
+    else if (tgt is CatState tcat && item is Prey prey) tcat.OnFed(prey);
+    else Debug.Log($"Invalid drop [tgt={tgt}, item={item}]");
   }
 
   private void AddCat (CatState cat) {
     var catObj = Instantiate(catPrefab, cats.transform);
     catObj.GetComponent<CatController>().Init(cat);
     catObj.SetActive(true);
-  }
-
-  private void OnCatDropped (CatState cat, Place place) {
-    cat.OnDrop(place);
   }
 }
 

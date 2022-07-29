@@ -636,6 +636,7 @@ MonoBehaviour:
   - {fileID: 58823080023066833}
   freshKill: {fileID: 488959851790959745}
   preyPrefab: {fileID: 4582355177152606085, guid: 7c7d91ffac4aa45259f1b83eb3988a24, type: 3}
+  doneButton: {fileID: 697888807700005829}
 --- !u!1 &8149214921230764395
 GameObject:
   m_ObjectHideFlags: 0

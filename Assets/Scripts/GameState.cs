@@ -142,6 +142,8 @@ public class ClanState {
     acted.CountValue.OnValue(ac => {
       if (ac >= CanAct) Done();
     });
+
+    game.phase.OnValue(PrepPhase);
   }
 
   public void Done () {
@@ -151,6 +153,27 @@ public class ClanState {
   public void AddFreshKill (Prey prey) {
     var index = freshKill.Count;
     freshKill.Add(index, prey);
+  }
+
+  public void EatFreshKill (Prey prey) {
+    for (int ii = 0, kk = freshKill.Count; ii < kk; ii += 1) {
+      if (freshKill[ii] != prey) continue;
+      for (int ss = ii; ss < kk-1; ss += 1) freshKill[ss] = freshKill[ss+1];
+      freshKill.Remove(kk-1);
+      return;
+    }
+    Debug.Log("Fresh kill eaten but not in pile: " + prey);
+  }
+
+  private void PrepPhase (Phase phase) {
+    switch (phase) {
+    case Phase.Hunt:
+      foreach (var cat in cats) cat.acted.Update(false);
+      break;
+    case Phase.Eat:
+      foreach (var cat in cats) cat.Digest();
+      break;
+    }
   }
 
   private int CanAct => cats.Count(cc => cc.CanAct(game.phase.current));
@@ -169,7 +192,7 @@ public class CatState {
 
   public enum Gender { None = 0, Female, Male }
   public enum Role { Leader, Medicine, Warrior, Apprentice, Kit }
-  public enum Hunger { Starving, Hungry, Full }
+  public enum Hunger { Dying, Starving, Hungry, Full }
   public enum Injury { None = 0, Scratched, Poisoned }
   public enum Stomach { Normal = 0, BellyAche, Poisoned }
   public enum Illness { None = 0, WhiteCough, GreenCough }
@@ -207,6 +230,10 @@ public class CatState {
   public bool CanAct (Phase phase) {
     if (phase == Phase.Hunt) return this.role.current != Role.Kit && this.pregnant.current == 0;
     else return true; // TODO
+  }
+
+  public void Digest () {
+    this.hunger.UpdateVia(h => h-1);
   }
 
   public void OnDrop (Place place) {
@@ -260,6 +287,14 @@ public class CatState {
       acted.Update(true);
       break;
     }
+  }
+
+  public bool OnFed (Prey prey) {
+    if (hunger.current == Hunger.Full) return false;
+    hunger.Update(Hunger.Full);
+    clan.EatFreshKill(prey);
+    // TODO: tummy ache chance
+    return true;
   }
 
   private static string FormatCatch (List<Prey> caught) {
