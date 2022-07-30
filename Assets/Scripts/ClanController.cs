@@ -1,5 +1,7 @@
 namespace catwars {
 
+using System.Linq;
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -7,11 +9,14 @@ using TMPro;
 using React;
 
 public class ClanController : MonoBehaviour {
+  private GameController gctrl;
 
+  public Icons icons;
   public MessagesController messages;
   public TMP_Text clanLabel;
   public GameObject cats;
   public GameObject catPrefab;
+  public PlaceController[] places;
   public HerbController[] herbs;
   public GameObject freshKill;
   public GameObject preyPrefab;
@@ -26,6 +31,10 @@ public class ClanController : MonoBehaviour {
 
   private ClanController () {
     dragInfo = Values.Join(draggedItem, hoveredTarget);
+  }
+
+  private void Awake () {
+    gctrl = GetComponentInParent<GameController>();
   }
 
   public void Init (GameState game, ClanState clan) {
@@ -50,6 +59,8 @@ public class ClanController : MonoBehaviour {
     });
 
     clan.messages.OnEmit(messages.Show);
+    clan.caught.OnEmit(caught => FloatIcon(caught.Item1, icons.Prey(caught.Item2)));
+    clan.found.OnEmit(caught => FloatIcon(caught.Item1, icons.Herb(caught.Item2)));
 
     dragInfo.OnChange((info, oinfo) => {
       var (item, tgt) = info;
@@ -62,6 +73,11 @@ public class ClanController : MonoBehaviour {
       doneButton.interactable = !done;
     });
     doneButton.onClick.AddListener(() => clan.Done());
+  }
+
+  private void FloatIcon (Place place, Sprite icon) {
+    var pctrl = places.Where(pp => pp.place == place).FirstOrDefault();
+    gctrl.floater.Float(pctrl.gameObject, icon, 1);
   }
 
   private void HandleDrop (object item, object tgt) {

@@ -138,6 +138,8 @@ public class ClanState {
   public readonly MutableSet<int> acted = RSets.LocalMutable<int>();
 
   public readonly Emitter<string> messages = new Emitter<string>();
+  public readonly Emitter<(Place, Prey)> caught = new Emitter<(Place, Prey)>();
+  public readonly Emitter<(Place, Herb)> found = new Emitter<(Place, Herb)>();
 
   public ClanState (GameState game, string name) {
     this.game = game;
@@ -275,16 +277,18 @@ public class CatState {
           found ??= new List<Herb>();
           found.Add(herb);
           clan.herbs.Update(herb, h => h+1);
+          clan.found.Emit((place, herb));
         }
       }
-      clan.messages.Emit($"{name.current} found {FormatFound(found)}.");
+      clan.found.Emit((place, Herb.Cobweb));
+      // clan.messages.Emit($"{name.current} found {FormatFound(found)}.");
       acted.Update(true);
       break;
 
     default:
       var preys = place.Preys();
       List<Prey> caught = null;
-      var rolls = 4-hunger;
+      var rolls = 5-hunger;
       if (this.role.current == Role.Apprentice) rolls -= 1;
       if (this.injury.current != Injury.None) rolls -= 1;
       if (this.stomach.current != Stomach.Normal) rolls -= 1;
@@ -296,9 +300,10 @@ public class CatState {
           caught ??= new List<Prey>();
           caught.Add(prey);
           clan.AddFreshKill(prey);
+          clan.caught.Emit((place, prey));
         }
       }
-      clan.messages.Emit($"{name.current} caught {FormatCatch(caught)}.");
+      // clan.messages.Emit($"{name.current} caught {FormatCatch(caught)}.");
       acted.Update(true);
       break;
     }

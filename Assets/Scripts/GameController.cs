@@ -16,9 +16,11 @@ public class GameController : MonoBehaviour {
   }
 
   public readonly GameState state;
+  public readonly AnimPlayer anim = new AnimPlayer();
 
   public MessagesController messages;
   public ClanController[] clans;
+  public FloatController floater;
 
   public GameController () {
     state = new GameState(new UnityEnviron(this));
@@ -31,6 +33,10 @@ public class GameController : MonoBehaviour {
     clans[2].Init(state, state.river);
     clans[3].Init(state, state.wind);
     state.Start();
+  }
+
+  private void Update () {
+    anim.Update(Time.deltaTime);
   }
 }
 

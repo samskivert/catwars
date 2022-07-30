@@ -4574,6 +4574,7 @@ GameObject:
   - component: {fileID: 1879193209}
   - component: {fileID: 1879193207}
   - component: {fileID: 1879193210}
+  - component: {fileID: 1879193211}
   m_Layer: 5
   m_Name: Game
   m_TagString: Untagged
@@ -4669,6 +4670,23 @@ MonoBehaviour:
   - {fileID: 571069496}
   - {fileID: 1900665225}
   - {fileID: 1888286314}
+  floater: {fileID: 1879193211}
+--- !u!114 &1879193211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879193203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac47aa49cef04812af4d7c3dc2ef4e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icons: {fileID: 11400000, guid: 461c5657633ac4c70b2e7b9eccf9a8c7, type: 2}
+  game: {fileID: 1879193210}
+  canvas: {fileID: 1496916223}
+  floatPrefab: {fileID: 741774598248520555, guid: e6f8b21488c7647b4a58f27142f0d8bd, type: 3}
 --- !u!1001 &1888286312
 PrefabInstance:
   m_ObjectHideFlags: 0

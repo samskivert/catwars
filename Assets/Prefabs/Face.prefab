@@ -158,12 +158,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 2496359014951626661}
   dragRect: {fileID: 4197740462839166484}
-  faceSprites:
-  - {fileID: 21300000, guid: dcbe629e6a39e45d4b759f72a63d3ad1, type: 3}
-  - {fileID: 21300000, guid: 862f2ed48650a40cbae3586e4ec12224, type: 3}
-  - {fileID: 21300000, guid: 906ad04a30706460780e997f844fc186, type: 3}
-  - {fileID: 21300000, guid: d0156c66709af4cde8ea8baf113d02cd, type: 3}
-  - {fileID: 21300000, guid: 1f2e34ee68abc493683293bb466b60b1, type: 3}
-  - {fileID: 21300000, guid: 040e60d5c0d9f40fea3cc21f33d6532b, type: 3}
-  - {fileID: 21300000, guid: ec26c47555aec4d66ba699009aa28ec2, type: 3}
-  - {fileID: 21300000, guid: f36943cad5ac24a2795c8d5b0d003055, type: 3}
+  icons: {fileID: 11400000, guid: 461c5657633ac4c70b2e7b9eccf9a8c7, type: 2}
