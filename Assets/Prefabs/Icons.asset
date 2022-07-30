@@ -39,3 +39,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 040e60d5c0d9f40fea3cc21f33d6532b, type: 3}
   - {fileID: 21300000, guid: ec26c47555aec4d66ba699009aa28ec2, type: 3}
   - {fileID: 21300000, guid: f36943cad5ac24a2795c8d5b0d003055, type: 3}
+  crown: {fileID: 21300000, guid: 3e791d8fffd81403ea0b641e361bc415, type: 3}
