@@ -1,20 +1,18 @@
 namespace catwars {
 
-using UnityEngine;
 using TMPro;
 
 public class HerbController : DraggableItem {
 
-  [EnumArray(typeof(Herb))] public Sprite[] herbSprites;
+  public Icons icons;
   public TMP_Text herbCount;
 
   public void SetHerb (Herb herb) {
-    image.sprite = herbSprites[(int)herb];
+    image.sprite = icons.Herb(herb);
   }
 
   public void SetCount (int count) {
     herbCount.text = count.ToString();
   }
 }
-
 }

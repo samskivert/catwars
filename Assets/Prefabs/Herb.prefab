@@ -198,13 +198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 7680161859266450608}
   dragRect: {fileID: 6500275313734027232}
-  herbSprites:
-  - {fileID: 21300000, guid: 630c09ee59f104c2b9b8b9e133f3ede7, type: 3}
-  - {fileID: 21300000, guid: 7a4b1c7f79c9745d18bfc2cc71daf50d, type: 3}
-  - {fileID: 21300000, guid: b3d8f401b96a14842be59dd60b68bb2e, type: 3}
-  - {fileID: 21300000, guid: ac694030aac0147eab33e1025aa095c0, type: 3}
-  - {fileID: 21300000, guid: 6745761c0da104c8f96395ec5a29fd5e, type: 3}
-  - {fileID: 21300000, guid: 225d580978c634c3aa4400d14fc04848, type: 3}
+  icons: {fileID: 11400000, guid: 461c5657633ac4c70b2e7b9eccf9a8c7, type: 2}
   herbCount: {fileID: 2732012494784761382}
 --- !u!114 &3835186971873391947
 MonoBehaviour:
