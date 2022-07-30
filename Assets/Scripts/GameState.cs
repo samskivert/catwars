@@ -69,8 +69,14 @@ public static class PlaceUtil {
   }
 }
 
+public abstract class Environ {
+  public abstract void RunLater (Action action);
+  public abstract void RunAfter (int seconds, Action action);
+}
+
 public class GameState {
 
+  public readonly Environ env;
   public readonly IMutable<int> day = Values.Mutable(0);
   public readonly IMutable<Phase> phase = Values.Mutable(Phase.PreGame);
   public readonly MutableSet<ClanState> phaseDone = RSets.LocalMutable<ClanState>();
@@ -84,14 +90,15 @@ public class GameState {
 
   public readonly System.Random random = new System.Random();
 
-  public GameState () {
+  public GameState (Environ environ) {
+    this.env = environ;
     shadow  = new ClanState(this, "Shadow Clan");
     thunder = new ClanState(this, "Thunder Clan");
     river   = new ClanState(this, "River Clan");
     wind    = new ClanState(this, "Wind Clan");
 
     phaseDone.OnValue(cs => {
-      if (cs.Count == 4) OnPhaseDone();
+      if (cs.Count == 4) env.RunAfter(2, OnPhaseDone);
     });
   }
 
@@ -105,11 +112,19 @@ public class GameState {
   }
 
   private void OnPhaseDone () {
-    if (phase.current == Phase.Hunt) {
+    switch (phase.current) {
+    case Phase.Hunt:
       phase.Update(Phase.Eat);
       messages.Emit($"Time to Eat");
-      phaseDone.Clear();
+      break;
+    case Phase.Eat:
+      phase.Update(Phase.Social);
+      messages.Emit($"Time to Relax");
+      // TODO: social stuff
+      env.RunAfter(5, StartNewDay);
+      break;
     }
+    phaseDone.Clear();
   }
 }
 

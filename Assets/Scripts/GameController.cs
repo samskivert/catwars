@@ -1,13 +1,28 @@
 namespace catwars {
 
+using System;
 using UnityEngine;
+using Util;
 
 public class GameController : MonoBehaviour {
 
-  public readonly GameState state = new GameState();
+  private class UnityEnviron : Environ {
+    private MonoBehaviour owner;
+    public UnityEnviron (MonoBehaviour owner) {
+      this.owner = owner;
+    }
+    public override void RunLater (Action action) => owner.RunIn(1, action);
+    public override void RunAfter (int seconds, Action action) => owner.RunAfter(seconds, action);
+  }
+
+  public readonly GameState state;
 
   public MessagesController messages;
   public ClanController[] clans;
+
+  public GameController () {
+    state = new GameState(new UnityEnviron(this));
+  }
 
   private void Start () {
     state.messages.OnEmit(messages.Show);
